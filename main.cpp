@@ -58,7 +58,6 @@ int main(int argc, char *argv[])
 
         while (true)
         {
-            moveCursor(x, y);
             char inputSym = getch();
             switch (inputSym)
             {
@@ -67,21 +66,28 @@ int main(int argc, char *argv[])
                 {
                     y--;
                 }
+                moveCursor(x, y);
                 break;
             case 66:
                 y++;
+                moveCursor(x, y);
                 break;
             case 67:
                 x++;
+                moveCursor(x, y);
                 break;
             case 68:
                 if (x != 0)
                 {
                     x--;
                 }
+                moveCursor(x, y);
                 break;
             default:
-                // cout << inputSym << endl;
+                if (inputSym != 65 && inputSym != 66 && inputSym != 67 && inputSym != 68)
+                {
+                    cout << inputSym;
+                }
                 break;
             }
         }
