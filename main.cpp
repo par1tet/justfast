@@ -12,7 +12,16 @@ int main(int argc, char *argv[])
         return 0;
     }
     std::string line;
-    ifstream in(argv[1]); // окрываем файл для чтения
+
+    string temp = "./";
+
+    if(argv[1][0] == '/'){
+        temp = "";
+    }
+
+    string pathToFile = temp + argv[1];
+
+    ifstream in(pathToFile); // окрываем файл для чтения
 
     if (in.is_open())
     {
