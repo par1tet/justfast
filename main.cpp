@@ -42,8 +42,17 @@ int main(int argc, char *argv[])
 
         while (getline(in, line))
         {
-            lines.push_back(line);
+            if (line == "")
+            {
+                lines.push_back(" ");
+            }
+            else
+            {
+                lines.push_back(line);
+            }
         }
+
+        lines.push_back(" ");
 
         for (int i = 0; i != lines.size(); i++)
         {
@@ -57,19 +66,48 @@ int main(int argc, char *argv[])
             inputSym = getch();
             if (inputSym == KEY_RIGHT)
             {
-                x++;
+                if (x + 1 < lines[y].size())
+                {
+                    x++;
+                }
+                else
+                {
+                    lines[y].push_back(' ');
+                    x++;
+                }
             }
             else if (inputSym == KEY_LEFT)
             {
-                x--;
+                if (x - 1 > 0)
+                {
+                    x--;
+                }
             }
             else if (inputSym == KEY_UP)
             {
-                y--;
+                if (y - 1 > 0)
+                {
+                    y--;
+                }
             }
             else if (inputSym == KEY_DOWN)
             {
-                y++;
+                if (y + 1 < lines.size())
+                {
+                    y++;
+                }
+                else
+                {
+                    string newLine = "";
+
+                    for (int i = 0; i != x + 1; i++)
+                    {
+                        newLine.push_back(' ');
+                    }
+
+                    lines.push_back(newLine);
+                    y++;
+                }
             }
             else
             {
@@ -85,6 +123,15 @@ int main(int argc, char *argv[])
                     }
                 }
                 out.close();
+                if (x + 1 < lines[y].size())
+                {
+                    x++;
+                }
+                else
+                {
+                    lines[y].push_back(' ');
+                    x++;
+                }
             }
             clear();
             for (int i = 0; i != lines.size(); i++)
