@@ -1,16 +1,10 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <termios.h>
-#include <unistd.h>
 #include <ncurses.h>
+#include <vector>
 
 using namespace std;
-
-// void moveCursor(int x, int y)
-// {
-//     std::cout << "\033[" << y << ";" << x << "H";
-// }
 
 int main(int argc, char *argv[])
 {
@@ -25,6 +19,7 @@ int main(int argc, char *argv[])
     cbreak();
 
     std::string line;
+    vector<string> lines;
 
     string temp = "./";
 
@@ -37,23 +32,29 @@ int main(int argc, char *argv[])
 
     int x = 0;
     int y = 0;
+    int inputSym = 0;
 
     ifstream in(pathToFile); // окрываем файл для чтения
 
     if (in.is_open())
     {
-        system("clear");
+        clear();
 
         while (getline(in, line))
         {
-            printw("%s\n", line.c_str());
+            lines.push_back(line);
         }
 
-        move(y, x);
+        for (int i = 0; i != lines.size(); i++)
+        {
+            printw("%s\n", lines[i].c_str());
+        }
+
+        move(0, 0);
 
         while (true)
         {
-            int inputSym = getch();
+            inputSym = getch();
             if (inputSym == KEY_RIGHT)
             {
                 x++;
@@ -72,7 +73,23 @@ int main(int argc, char *argv[])
             }
             else
             {
-                printw("%c", inputSym);
+                lines[y][x] = inputSym;
+
+                ofstream out;
+                out.open(pathToFile);
+                if (out.is_open())
+                {
+                    for (int i = 0; i != lines.size(); i++)
+                    {
+                        out << lines[i] << endl;
+                    }
+                }
+                out.close();
+            }
+            clear();
+            for (int i = 0; i != lines.size(); i++)
+            {
+                printw("%s\n", lines[i].c_str());
             }
             move(y, x);
         }
