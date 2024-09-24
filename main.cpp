@@ -3,26 +3,14 @@
 #include <string>
 #include <termios.h>
 #include <unistd.h>
+#include <ncurses.h>
 
 using namespace std;
 
-char getch()
-{
-    struct termios oldt, newt;
-    char ch;
-    tcgetattr(STDIN_FILENO, &oldt);          // Получаем текущие настройки терминала
-    newt = oldt;                             // Копируем настройки
-    newt.c_lflag &= ~(ICANON | ECHO);        // Отключаем echo и canonical mode
-    tcsetattr(STDIN_FILENO, TCSANOW, &newt); // Применяем новые настройки
-    ch = getchar();                          // Считываем символ
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldt); // Восстанавливаем старые настройки
-    return ch;
-}
-
-void moveCursor(int x, int y)
-{
-    std::cout << "\033[" << y << ";" << x << "H";
-}
+// void moveCursor(int x, int y)
+// {
+//     std::cout << "\033[" << y << ";" << x << "H";
+// }
 
 int main(int argc, char *argv[])
 {
@@ -31,6 +19,11 @@ int main(int argc, char *argv[])
         cout << "not found a path" << endl;
         return 0;
     }
+    initscr();
+    keypad(stdscr, TRUE);
+    noecho();
+    cbreak();
+
     std::string line;
 
     string temp = "./";
@@ -53,51 +46,44 @@ int main(int argc, char *argv[])
 
         while (getline(in, line))
         {
-            cout << line << endl;
+            printw("%s\n", line.c_str());
         }
+
+        move(y, x);
 
         while (true)
         {
-            char inputSym = getch();
-            switch (inputSym)
+            int inputSym = getch();
+            if (inputSym == KEY_RIGHT)
             {
-            case 65:
-                if (y != 0)
-                {
-                    y--;
-                }
-                moveCursor(x, y);
-                break;
-            case 66:
-                y++;
-                moveCursor(x, y);
-                break;
-            case 67:
                 x++;
-                moveCursor(x, y);
-                break;
-            case 68:
-                if (x != 0)
-                {
-                    x--;
-                }
-                moveCursor(x, y);
-                break;
-            default:
-                if (inputSym != 65 && inputSym != 66 && inputSym != 67 && inputSym != 68)
-                {
-                    cout << inputSym;
-                }
-                break;
             }
+            else if (inputSym == KEY_LEFT)
+            {
+                x--;
+            }
+            else if (inputSym == KEY_UP)
+            {
+                y--;
+            }
+            else if (inputSym == KEY_DOWN)
+            {
+                y++;
+            }
+            else
+            {
+                printw("%c", inputSym);
+            }
+            move(y, x);
         }
     }
     else
     {
-        cout << "not found a file" << endl;
+        printw("not found a file");
     }
 
     in.close(); // закрываем файл
+    endwin();
 
     return 0;
 }
